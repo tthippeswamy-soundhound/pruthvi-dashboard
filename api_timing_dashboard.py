@@ -612,4 +612,4 @@ if __name__ == "__main__":
     else:
         port = int(os.environ.get("PORT", 8050))
         print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
-        app.run(debug=False, host="0.0.0.0", port=port)
+        app.run(debug=False)
