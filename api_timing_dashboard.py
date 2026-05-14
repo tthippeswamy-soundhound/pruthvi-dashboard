@@ -599,18 +599,12 @@ def refresh_dashboard(store_data):
         table_data,
         table_columns,
     )
-import os
-import socket
 
-def is_port_in_use(port):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("0.0.0.0", port)) == 0
 
 # ── Entry point ───────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run_server(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
+    # port = int(sys.argv[1]) if len(sys.argv) > 1 else 8050
+    port = 8501
+    print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
+    app.run(debug=False, host="0.0.0.0", port=port)
