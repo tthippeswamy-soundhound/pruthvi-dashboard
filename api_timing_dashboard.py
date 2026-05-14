@@ -608,12 +608,4 @@ def is_port_in_use(port):
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))
-
-    # 👇 auto-fallback if port is already used
-    if is_port_in_use(port):
-        port += 1
-
-    print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
-
-    app.run(debug=False, host="0.0.0.0", port=port, use_reloader=False)
+    app.run(debug=False)
