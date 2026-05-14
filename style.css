@@ -1,0 +1,451 @@
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --border: #e1e5eb;
+  --text: #1a1d23;
+  --text-muted: #6b7280;
+  --primary: #4f6df5;
+  --primary-hover: #3b5de7;
+  --danger: #ef4444;
+  --added-bg: #dcfce7;
+  --added-border: #86efac;
+  --added-text: #166534;
+  --removed-bg: #fee2e2;
+  --removed-border: #fca5a5;
+  --removed-text: #991b1b;
+  --changed-bg: #fef9c3;
+  --changed-border: #fde047;
+  --highlight-added: #bbf7d0;
+  --highlight-removed: #fecaca;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* === Header === */
+header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/* === Main Layout === */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+}
+
+/* === Input Section === */
+.input-section {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.input-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.panel-header h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid var(--primary);
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.file-upload-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+textarea {
+  flex: 1;
+  min-height: 220px;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface);
+}
+
+textarea::placeholder {
+  color: #b0b8c4;
+}
+
+.input-divider {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+#swap-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: all 0.15s ease;
+  color: var(--text-muted);
+}
+
+#swap-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* === Controls === */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+  padding: 0.6rem 1.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #aab1bc;
+  color: var(--text);
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-left: auto;
+}
+
+.toggle-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.toggle-btn:not(.active):hover {
+  background: var(--bg);
+}
+
+.diff-stats {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 1rem;
+  margin-left: 0.5rem;
+}
+
+.diff-stats .stat-added {
+  color: var(--added-text);
+  font-weight: 600;
+}
+
+.diff-stats .stat-removed {
+  color: var(--removed-text);
+  font-weight: 600;
+}
+
+/* === Results === */
+.results-section {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.diff-output {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* --- Side by Side --- */
+.diff-output.side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.diff-output.side-by-side .diff-pane {
+  overflow-x: auto;
+}
+
+.diff-output.side-by-side .diff-pane:first-child {
+  border-right: 2px solid var(--border);
+}
+
+.diff-pane-header {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+/* --- Diff Lines --- */
+.diff-line {
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  border-bottom: 1px solid transparent;
+}
+
+.diff-line:hover {
+  filter: brightness(0.97);
+}
+
+.line-num {
+  flex-shrink: 0;
+  width: 50px;
+  padding: 0 8px;
+  text-align: right;
+  color: #9ca3af;
+  user-select: none;
+  background: rgba(0,0,0,0.02);
+  border-right: 1px solid var(--border);
+}
+
+.line-content {
+  flex: 1;
+  padding: 0 12px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.diff-line.added {
+  background: var(--added-bg);
+}
+
+.diff-line.added .line-num {
+  background: rgba(22,101,52,0.08);
+  color: var(--added-text);
+}
+
+.diff-line.removed {
+  background: var(--removed-bg);
+}
+
+.diff-line.removed .line-num {
+  background: rgba(153,27,27,0.08);
+  color: var(--removed-text);
+}
+
+.diff-line.empty-placeholder {
+  background: #f9fafb;
+}
+
+.diff-line.empty-placeholder .line-content {
+  visibility: hidden;
+}
+
+/* Inline word-level highlights */
+.highlight-add {
+  background: var(--highlight-added);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.highlight-remove {
+  background: var(--highlight-removed);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* --- Inline View --- */
+.diff-output.inline-view .diff-line {
+  width: 100%;
+}
+
+.diff-output.inline-view .line-nums {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.diff-output.inline-view .line-num {
+  width: 50px;
+}
+
+.diff-output.inline-view .prefix {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+  user-select: none;
+}
+
+.diff-line.added .prefix {
+  color: var(--added-text);
+}
+
+.diff-line.removed .prefix {
+  color: var(--removed-text);
+}
+
+/* --- Identical message --- */
+.diff-identical {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.diff-identical .check {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 1.5rem;
+  background: var(--added-bg);
+  border-radius: 50%;
+  margin-bottom: 0.75rem;
+}
+
+/* === Footer === */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .input-section {
+    flex-direction: column;
+  }
+
+  .input-divider {
+    padding: 0.5rem 0;
+    justify-content: center;
+  }
+
+  .diff-output.side-by-side {
+    grid-template-columns: 1fr;
+  }
+
+  .diff-output.side-by-side .diff-pane:first-child {
+    border-right: none;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .controls {
+    justify-content: center;
+  }
+
+  .view-toggle {
+    margin-left: 0;
+  }
+}

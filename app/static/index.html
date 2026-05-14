@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Transcription Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>
+                    <span class="header-icon">&#127908;</span>
+                    Voice Transcription Analyzer
+                </h1>
+                <p class="header-subtitle">Upload audio files, transcribe, and analyze with AI</p>
+            </div>
+            <button class="settings-toggle" onclick="toggleSettings()">
+                &#9881; Settings
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel card">
+            <div class="card-header">
+                <span class="card-title">&#9881; LLM Settings</span>
+                <span class="card-badge">Optional</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">OpenAI API Key</label>
+                <input type="password" id="apiKey" class="form-input" placeholder="sk-...">
+                <p class="form-hint">Required only for LLM analysis. Your key is never stored on the server.</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">LLM Model</label>
+                <select id="llmModel" class="form-select">
+                    <option value="gpt-4o-mini">GPT-4o Mini (Fast & Affordable)</option>
+                    <option value="gpt-4o">GPT-4o (Most Capable)</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Legacy)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Custom Analysis Prompt</label>
+                <textarea id="customPrompt" class="form-textarea" placeholder="Leave empty to use the default prompt (summary, sentiment, key topics, action items, notable quotes)..."></textarea>
+                <p class="form-hint">Customize what the LLM analyzes in each transcript.</p>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">&#128194; Upload Audio Files</span>
+                <span id="fileCount" class="card-badge" style="display:none">0 files</span>
+            </div>
+            <div id="uploadArea" class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">&#127925;</div>
+                <p class="upload-text"><strong>Click to upload</strong> or drag and drop</p>
+                <p class="upload-hint">Supports MP3, WAV, M4A, OGG, FLAC, WebM, MP4, AAC (max 25MB each)</p>
+            </div>
+            <input type="file" id="fileInput" class="file-input" multiple accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.webm,.mp4,.aac,.wma">
+
+            <div id="fileList" class="file-list"></div>
+
+            <div id="uploadActions" style="display:none; margin-top:1rem;">
+                <div class="toggle-wrapper" style="margin-bottom:0.75rem;">
+                    <input type="checkbox" id="enableDiarize" class="toggle">
+                    <span class="toggle-label">Speaker Diarization (separate Agent &amp; User voices)</span>
+                </div>
+                <div class="btn-group">
+                    <button id="transcribeBtn" class="btn btn-primary" onclick="transcribeFiles()">
+                        &#9654; Transcribe Files
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearFiles()">
+                        &#10005; Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="progress-section card">
+            <div class="card-header">
+                <span class="card-title"><span class="spinner"></span> Transcribing...</span>
+                <span id="progressCount" class="card-badge">0/0</span>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <div class="progress-status">
+                <span id="progressFile" class="progress-file">Preparing...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">&#128196; Transcription Results</span>
+                    <span id="resultCount" class="card-badge">0 results</span>
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <div class="toggle-wrapper">
+                        <input type="checkbox" id="enableLLM" class="toggle" onchange="toggleLLMOption()">
+                        <span class="toggle-label">Enable LLM Analysis</span>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-bottom:1rem;">
+                    <button id="analyzeBtn" class="btn btn-primary" onclick="analyzeTranscripts()" style="display:none;">
+                        &#129302; Run LLM Analysis
+                    </button>
+                    <button id="exportBtn" class="btn btn-success" onclick="exportToExcel()">
+                        &#128202; Export to Excel
+                    </button>
+                </div>
+
+                <div class="results-table-wrapper">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th class="col-num">#</th>
+                                <th class="col-file">Filename</th>
+                                <th class="col-transcript">Transcript</th>
+                                <th id="analysisHeader" class="col-analysis" style="display:none;">LLM Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

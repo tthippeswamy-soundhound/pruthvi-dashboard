@@ -1,0 +1,759 @@
+{
+  "info": {
+    "name": "Order Management - Mock APIs",
+    "description": "Mock API collection for order management evaluation process.\n\nUse cases:\n1. Find Order\n2. Track Order\n3. Cancel Order\n4. Modify Address\n5. Return Item\n6. Replace Damaged Item\n\nBase URL: https://{{base_url}}/api/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "mock-order-api.example.com",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "ORD-2026-00142",
+      "type": "string"
+    },
+    {
+      "key": "item_id",
+      "value": "ITEM-88901",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Find Order",
+      "item": [
+        {
+          "name": "Find Order by Order ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}"]
+            },
+            "description": "Retrieve order details by order ID."
+          },
+          "response": [
+            {
+              "name": "200 - Order Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00142\",\n    \"customer\": {\n      \"customer_id\": \"CUST-30021\",\n      \"name\": \"Jane Smith\",\n      \"email\": \"jane.smith@example.com\",\n      \"phone\": \"+1-555-0142\"\n    },\n    \"items\": [\n      {\n        \"item_id\": \"ITEM-88901\",\n        \"name\": \"Wireless Bluetooth Headphones\",\n        \"quantity\": 1,\n        \"price\": 79.99,\n        \"sku\": \"WBH-400-BLK\"\n      },\n      {\n        \"item_id\": \"ITEM-88902\",\n        \"name\": \"USB-C Charging Cable\",\n        \"quantity\": 2,\n        \"price\": 12.99,\n        \"sku\": \"UCC-100-WHT\"\n      }\n    ],\n    \"order_total\": 105.97,\n    \"currency\": \"USD\",\n    \"order_status\": \"shipped\",\n    \"payment_method\": \"credit_card\",\n    \"shipping_address\": {\n      \"street\": \"123 Main St\",\n      \"city\": \"Austin\",\n      \"state\": \"TX\",\n      \"zip\": \"73301\",\n      \"country\": \"US\"\n    },\n    \"placed_at\": \"2026-03-25T14:30:00Z\",\n    \"updated_at\": \"2026-03-26T09:15:00Z\"\n  }\n}"
+            },
+            {
+              "name": "404 - Order Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-0000-XXXXX",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-0000-XXXXX"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"ORDER_NOT_FOUND\",\n    \"message\": \"No order found with ID ORD-0000-XXXXX. Please verify the order ID and try again.\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Orders by Email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders?email=jane.smith@example.com",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "jane.smith@example.com",
+                  "description": "Customer email address"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Search for orders using customer email."
+          },
+          "response": [
+            {
+              "name": "200 - Orders Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders?email=jane.smith@example.com",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders"],
+                  "query": [
+                    { "key": "email", "value": "jane.smith@example.com" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"orders\": [\n      {\n        \"order_id\": \"ORD-2026-00142\",\n        \"order_status\": \"shipped\",\n        \"order_total\": 105.97,\n        \"item_count\": 3,\n        \"placed_at\": \"2026-03-25T14:30:00Z\"\n      },\n      {\n        \"order_id\": \"ORD-2026-00098\",\n        \"order_status\": \"delivered\",\n        \"order_total\": 249.00,\n        \"item_count\": 1,\n        \"placed_at\": \"2026-03-10T08:20:00Z\"\n      }\n    ],\n    \"total_results\": 2,\n    \"page\": 1,\n    \"limit\": 10\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Orders by Phone",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders?phone=+1-555-0142",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "+1-555-0142",
+                  "description": "Customer phone number"
+                }
+              ]
+            },
+            "description": "Search for orders using customer phone number."
+          },
+          "response": [
+            {
+              "name": "200 - Orders Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders?phone=+1-555-0142",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders"],
+                  "query": [
+                    { "key": "phone", "value": "+1-555-0142" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"orders\": [\n      {\n        \"order_id\": \"ORD-2026-00142\",\n        \"order_status\": \"shipped\",\n        \"order_total\": 105.97,\n        \"item_count\": 3,\n        \"placed_at\": \"2026-03-25T14:30:00Z\"\n      }\n    ],\n    \"total_results\": 1,\n    \"page\": 1,\n    \"limit\": 10\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to find/search orders by order ID, email, or phone number."
+    },
+    {
+      "name": "2. Track Order",
+      "item": [
+        {
+          "name": "Track Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/tracking",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "tracking"]
+            },
+            "description": "Get real-time tracking information for an order."
+          },
+          "response": [
+            {
+              "name": "200 - Tracking Info (In Transit)",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142/tracking",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142", "tracking"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00142\",\n    \"tracking_number\": \"1Z999AA10123456784\",\n    \"carrier\": \"UPS\",\n    \"current_status\": \"in_transit\",\n    \"estimated_delivery\": \"2026-03-31T18:00:00Z\",\n    \"shipping_method\": \"standard\",\n    \"tracking_url\": \"https://www.ups.com/track?tracknum=1Z999AA10123456784\",\n    \"events\": [\n      {\n        \"timestamp\": \"2026-03-28T14:22:00Z\",\n        \"status\": \"in_transit\",\n        \"location\": \"Dallas, TX\",\n        \"description\": \"Package is in transit to destination\"\n      },\n      {\n        \"timestamp\": \"2026-03-27T08:45:00Z\",\n        \"status\": \"in_transit\",\n        \"location\": \"Memphis, TN\",\n        \"description\": \"Departed facility\"\n      },\n      {\n        \"timestamp\": \"2026-03-26T16:30:00Z\",\n        \"status\": \"shipped\",\n        \"location\": \"Louisville, KY\",\n        \"description\": \"Package picked up by carrier\"\n      },\n      {\n        \"timestamp\": \"2026-03-26T09:15:00Z\",\n        \"status\": \"label_created\",\n        \"location\": \"Louisville, KY\",\n        \"description\": \"Shipping label created\"\n      }\n    ]\n  }\n}"
+            },
+            {
+              "name": "200 - Tracking Info (Delivered)",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00098/tracking",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00098", "tracking"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00098\",\n    \"tracking_number\": \"9400111899223100012\",\n    \"carrier\": \"USPS\",\n    \"current_status\": \"delivered\",\n    \"delivered_at\": \"2026-03-14T11:42:00Z\",\n    \"shipping_method\": \"express\",\n    \"signed_by\": \"J. SMITH\",\n    \"events\": [\n      {\n        \"timestamp\": \"2026-03-14T11:42:00Z\",\n        \"status\": \"delivered\",\n        \"location\": \"Austin, TX\",\n        \"description\": \"Delivered - Left with individual\"\n      },\n      {\n        \"timestamp\": \"2026-03-14T06:10:00Z\",\n        \"status\": \"out_for_delivery\",\n        \"location\": \"Austin, TX\",\n        \"description\": \"Out for delivery\"\n      }\n    ]\n  }\n}"
+            },
+            {
+              "name": "404 - Order Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-0000-XXXXX/tracking",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-0000-XXXXX", "tracking"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"ORDER_NOT_FOUND\",\n    \"message\": \"No order found with ID ORD-0000-XXXXX.\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to track order shipment status and delivery events."
+    },
+    {
+      "name": "3. Cancel Order",
+      "item": [
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"changed_mind\",\n  \"comments\": \"Found a better deal elsewhere.\"\n}"
+            },
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/cancel",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "cancel"]
+            },
+            "description": "Cancel an order. Only orders in 'pending' or 'processing' status can be cancelled."
+          },
+          "response": [
+            {
+              "name": "200 - Order Cancelled Successfully",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00150/cancel",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00150", "cancel"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"changed_mind\",\n  \"comments\": \"Found a better deal elsewhere.\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00150\",\n    \"order_status\": \"cancelled\",\n    \"cancellation_id\": \"CAN-2026-00034\",\n    \"reason\": \"changed_mind\",\n    \"refund\": {\n      \"refund_id\": \"REF-2026-00089\",\n      \"amount\": 59.99,\n      \"currency\": \"USD\",\n      \"method\": \"original_payment\",\n      \"estimated_days\": 5\n    },\n    \"cancelled_at\": \"2026-03-29T10:00:00Z\"\n  }\n}"
+            },
+            {
+              "name": "409 - Cannot Cancel (Already Shipped)",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142/cancel",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142", "cancel"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"changed_mind\",\n  \"comments\": \"No longer need this.\"\n}"
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"CANCELLATION_NOT_ALLOWED\",\n    \"message\": \"Order ORD-2026-00142 cannot be cancelled because it has already been shipped. Please initiate a return instead.\",\n    \"current_status\": \"shipped\"\n  }\n}"
+            },
+            {
+              "name": "404 - Order Not Found",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-0000-XXXXX/cancel",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-0000-XXXXX", "cancel"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"ORDER_NOT_FOUND\",\n    \"message\": \"No order found with ID ORD-0000-XXXXX.\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to cancel an order and initiate refund."
+    },
+    {
+      "name": "4. Modify Address",
+      "item": [
+        {
+          "name": "Get Current Shipping Address",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/address",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "address"]
+            },
+            "description": "Get the current shipping address for an order."
+          },
+          "response": [
+            {
+              "name": "200 - Address Retrieved",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142/address",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142", "address"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00142\",\n    \"shipping_address\": {\n      \"street\": \"123 Main St\",\n      \"apartment\": null,\n      \"city\": \"Austin\",\n      \"state\": \"TX\",\n      \"zip\": \"73301\",\n      \"country\": \"US\"\n    },\n    \"address_modifiable\": false,\n    \"reason\": \"Order has already been shipped.\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Shipping Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shipping_address\": {\n    \"street\": \"456 Oak Ave\",\n    \"apartment\": \"Apt 2B\",\n    \"city\": \"Dallas\",\n    \"state\": \"TX\",\n    \"zip\": \"75201\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/address",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "address"]
+            },
+            "description": "Update the shipping address. Only possible before the order has shipped."
+          },
+          "response": [
+            {
+              "name": "200 - Address Updated",
+              "originalRequest": {
+                "method": "PUT",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00150/address",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00150", "address"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"shipping_address\": {\n    \"street\": \"456 Oak Ave\",\n    \"apartment\": \"Apt 2B\",\n    \"city\": \"Dallas\",\n    \"state\": \"TX\",\n    \"zip\": \"75201\",\n    \"country\": \"US\"\n  }\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"order_id\": \"ORD-2026-00150\",\n    \"previous_address\": {\n      \"street\": \"789 Elm St\",\n      \"apartment\": null,\n      \"city\": \"Houston\",\n      \"state\": \"TX\",\n      \"zip\": \"77001\",\n      \"country\": \"US\"\n    },\n    \"new_address\": {\n      \"street\": \"456 Oak Ave\",\n      \"apartment\": \"Apt 2B\",\n      \"city\": \"Dallas\",\n      \"state\": \"TX\",\n      \"zip\": \"75201\",\n      \"country\": \"US\"\n    },\n    \"updated_at\": \"2026-03-29T10:05:00Z\"\n  }\n}"
+            },
+            {
+              "name": "409 - Cannot Modify (Already Shipped)",
+              "originalRequest": {
+                "method": "PUT",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142/address",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142", "address"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"shipping_address\": {\n    \"street\": \"456 Oak Ave\",\n    \"apartment\": \"Apt 2B\",\n    \"city\": \"Dallas\",\n    \"state\": \"TX\",\n    \"zip\": \"75201\",\n    \"country\": \"US\"\n  }\n}"
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"ADDRESS_MODIFICATION_NOT_ALLOWED\",\n    \"message\": \"Address for order ORD-2026-00142 cannot be modified because it has already been shipped.\",\n    \"current_status\": \"shipped\"\n  }\n}"
+            },
+            {
+              "name": "400 - Invalid Address",
+              "originalRequest": {
+                "method": "PUT",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00150/address",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00150", "address"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"shipping_address\": {\n    \"street\": \"\",\n    \"city\": \"Dallas\",\n    \"state\": \"TX\",\n    \"zip\": \"75201\",\n    \"country\": \"US\"\n  }\n}"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"INVALID_ADDRESS\",\n    \"message\": \"The provided address is invalid.\",\n    \"details\": [\n      {\n        \"field\": \"shipping_address.street\",\n        \"issue\": \"Street address is required.\"\n      }\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to view and modify shipping address for an order."
+    },
+    {
+      "name": "5. Return Item",
+      "item": [
+        {
+          "name": "Initiate Return",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1,\n      \"reason\": \"not_as_expected\",\n      \"comments\": \"Sound quality does not match the description.\"\n    }\n  ],\n  \"refund_method\": \"original_payment\"\n}"
+            },
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/returns",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "returns"]
+            },
+            "description": "Initiate a return for one or more items in a delivered order."
+          },
+          "response": [
+            {
+              "name": "201 - Return Initiated",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00098/returns",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00098", "returns"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1,\n      \"reason\": \"not_as_expected\",\n      \"comments\": \"Sound quality does not match the description.\"\n    }\n  ],\n  \"refund_method\": \"original_payment\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"return_id\": \"RET-2026-00015\",\n    \"order_id\": \"ORD-2026-00098\",\n    \"return_status\": \"initiated\",\n    \"items\": [\n      {\n        \"item_id\": \"ITEM-88901\",\n        \"name\": \"Wireless Bluetooth Headphones\",\n        \"quantity\": 1,\n        \"reason\": \"not_as_expected\",\n        \"refund_amount\": 79.99\n      }\n    ],\n    \"return_label\": {\n      \"carrier\": \"UPS\",\n      \"tracking_number\": \"1Z999AA10987654321\",\n      \"label_url\": \"https://returns.example.com/labels/RET-2026-00015.pdf\",\n      \"drop_off_locations_url\": \"https://www.ups.com/dropoff\"\n    },\n    \"refund\": {\n      \"amount\": 79.99,\n      \"currency\": \"USD\",\n      \"method\": \"original_payment\",\n      \"estimated_days\": 7,\n      \"note\": \"Refund will be processed after the item is received and inspected.\"\n    },\n    \"return_by\": \"2026-04-28T23:59:59Z\",\n    \"created_at\": \"2026-03-29T10:10:00Z\"\n  }\n}"
+            },
+            {
+              "name": "409 - Return Not Eligible",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00142/returns",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00142", "returns"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1,\n      \"reason\": \"not_as_expected\"\n    }\n  ],\n  \"refund_method\": \"original_payment\"\n}"
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"RETURN_NOT_ELIGIBLE\",\n    \"message\": \"Order ORD-2026-00142 is not eligible for return. The order must be in 'delivered' status.\",\n    \"current_status\": \"shipped\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Return Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/returns/RET-2026-00015",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "returns", "RET-2026-00015"]
+            },
+            "description": "Check the status of a return request."
+          },
+          "response": [
+            {
+              "name": "200 - Return Status",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/returns/RET-2026-00015",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "returns", "RET-2026-00015"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"return_id\": \"RET-2026-00015\",\n    \"order_id\": \"ORD-2026-00098\",\n    \"return_status\": \"item_received\",\n    \"items\": [\n      {\n        \"item_id\": \"ITEM-88901\",\n        \"name\": \"Wireless Bluetooth Headphones\",\n        \"quantity\": 1,\n        \"inspection_status\": \"pending\"\n      }\n    ],\n    \"refund\": {\n      \"amount\": 79.99,\n      \"currency\": \"USD\",\n      \"status\": \"pending_inspection\",\n      \"method\": \"original_payment\"\n    },\n    \"events\": [\n      {\n        \"timestamp\": \"2026-03-31T09:00:00Z\",\n        \"status\": \"item_received\",\n        \"description\": \"Return item received at warehouse. Inspection pending.\"\n      },\n      {\n        \"timestamp\": \"2026-03-29T10:10:00Z\",\n        \"status\": \"initiated\",\n        \"description\": \"Return request created. Return label generated.\"\n      }\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to initiate and track item returns with refund processing."
+    },
+    {
+      "name": "6. Replace Damaged Item",
+      "item": [
+        {
+          "name": "Request Replacement for Damaged Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1,\n      \"damage_type\": \"physical_damage\",\n      \"description\": \"The left ear cup is cracked and the headband is bent.\",\n      \"image_urls\": [\n        \"https://uploads.example.com/damage/img_001.jpg\",\n        \"https://uploads.example.com/damage/img_002.jpg\"\n      ]\n    }\n  ],\n  \"preferred_resolution\": \"replacement\"\n}"
+            },
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/orders/{{order_id}}/replacements",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "orders", "{{order_id}}", "replacements"]
+            },
+            "description": "Request a replacement for a damaged item. Supports image evidence upload."
+          },
+          "response": [
+            {
+              "name": "201 - Replacement Approved",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00098/replacements",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00098", "replacements"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1,\n      \"damage_type\": \"physical_damage\",\n      \"description\": \"The left ear cup is cracked and the headband is bent.\",\n      \"image_urls\": [\n        \"https://uploads.example.com/damage/img_001.jpg\",\n        \"https://uploads.example.com/damage/img_002.jpg\"\n      ]\n    }\n  ],\n  \"preferred_resolution\": \"replacement\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"replacement_id\": \"RPL-2026-00008\",\n    \"order_id\": \"ORD-2026-00098\",\n    \"replacement_status\": \"approved\",\n    \"items\": [\n      {\n        \"item_id\": \"ITEM-88901\",\n        \"name\": \"Wireless Bluetooth Headphones\",\n        \"quantity\": 1,\n        \"damage_type\": \"physical_damage\",\n        \"resolution\": \"replacement\"\n      }\n    ],\n    \"replacement_order\": {\n      \"new_order_id\": \"ORD-2026-00160\",\n      \"estimated_shipping\": \"2026-03-30T12:00:00Z\",\n      \"estimated_delivery\": \"2026-04-03T18:00:00Z\",\n      \"shipping_method\": \"express\",\n      \"cost_to_customer\": 0.00\n    },\n    \"return_instructions\": {\n      \"return_required\": true,\n      \"return_label\": {\n        \"carrier\": \"UPS\",\n        \"tracking_number\": \"1Z999AA10111222333\",\n        \"label_url\": \"https://returns.example.com/labels/RPL-2026-00008.pdf\"\n      },\n      \"return_by\": \"2026-04-14T23:59:59Z\",\n      \"note\": \"Please return the damaged item within 15 days. No return shipping cost.\"\n    },\n    \"created_at\": \"2026-03-29T10:15:00Z\"\n  }\n}"
+            },
+            {
+              "name": "201 - Replacement with Refund (Out of Stock)",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00098/replacements",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00098", "replacements"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88902\",\n      \"quantity\": 1,\n      \"damage_type\": \"defective\",\n      \"description\": \"Cable does not charge.\"\n    }\n  ],\n  \"preferred_resolution\": \"replacement\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"replacement_id\": \"RPL-2026-00009\",\n    \"order_id\": \"ORD-2026-00098\",\n    \"replacement_status\": \"approved_refund\",\n    \"items\": [\n      {\n        \"item_id\": \"ITEM-88902\",\n        \"name\": \"USB-C Charging Cable\",\n        \"quantity\": 1,\n        \"damage_type\": \"defective\",\n        \"resolution\": \"refund\",\n        \"resolution_reason\": \"Item is currently out of stock. A full refund will be issued instead.\"\n      }\n    ],\n    \"refund\": {\n      \"refund_id\": \"REF-2026-00092\",\n      \"amount\": 12.99,\n      \"currency\": \"USD\",\n      \"method\": \"original_payment\",\n      \"estimated_days\": 5\n    },\n    \"return_instructions\": {\n      \"return_required\": false,\n      \"note\": \"No need to return the defective item.\"\n    },\n    \"created_at\": \"2026-03-29T10:20:00Z\"\n  }\n}"
+            },
+            {
+              "name": "400 - Missing Damage Details",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/orders/ORD-2026-00098/replacements",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "orders", "ORD-2026-00098", "replacements"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"item_id\": \"ITEM-88901\",\n      \"quantity\": 1\n    }\n  ]\n}"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"error\",\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Missing required fields for replacement request.\",\n    \"details\": [\n      {\n        \"field\": \"items[0].damage_type\",\n        \"issue\": \"Damage type is required. Allowed values: physical_damage, defective, missing_parts, wrong_item.\"\n      },\n      {\n        \"field\": \"items[0].description\",\n        \"issue\": \"A description of the damage is required.\"\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Replacement Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{base_url}}/api/v1/replacements/RPL-2026-00008",
+              "protocol": "https",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "replacements", "RPL-2026-00008"]
+            },
+            "description": "Check the status of a replacement request."
+          },
+          "response": [
+            {
+              "name": "200 - Replacement Status",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "https://{{base_url}}/api/v1/replacements/RPL-2026-00008",
+                  "protocol": "https",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "replacements", "RPL-2026-00008"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"replacement_id\": \"RPL-2026-00008\",\n    \"order_id\": \"ORD-2026-00098\",\n    \"replacement_status\": \"replacement_shipped\",\n    \"replacement_order\": {\n      \"new_order_id\": \"ORD-2026-00160\",\n      \"tracking_number\": \"1Z999AA10444555666\",\n      \"carrier\": \"UPS\",\n      \"estimated_delivery\": \"2026-04-03T18:00:00Z\"\n    },\n    \"return_status\": {\n      \"return_received\": false,\n      \"return_tracking\": \"1Z999AA10111222333\",\n      \"return_by\": \"2026-04-14T23:59:59Z\"\n    },\n    \"events\": [\n      {\n        \"timestamp\": \"2026-03-30T12:30:00Z\",\n        \"status\": \"replacement_shipped\",\n        \"description\": \"Replacement item has been shipped.\"\n      },\n      {\n        \"timestamp\": \"2026-03-29T10:15:00Z\",\n        \"status\": \"approved\",\n        \"description\": \"Replacement request approved. Replacement order created.\"\n      }\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "APIs to request and track replacements for damaged or defective items."
+    }
+  ]
+}

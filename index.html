@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Compare — Diff Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Text Compare</h1>
+    <p class="subtitle">Compare two text files side by side</p>
+  </header>
+
+  <main>
+    <!-- Input Section -->
+    <section class="input-section">
+      <div class="input-panel" id="panel-left">
+        <div class="panel-header">
+          <h2>Original</h2>
+          <label class="file-upload-btn">
+            <input type="file" id="file-left" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.c,.cpp,.h,.log,.yml,.yaml,.toml,.ini,.cfg,.conf,.sh,.bat,.sql,.rb,.go,.rs,.ts,.tsx,.jsx,.vue,.svelte,.php" hidden>
+            Upload File
+          </label>
+        </div>
+        <textarea id="text-left" placeholder="Paste or type original text here..."></textarea>
+      </div>
+
+      <div class="input-divider">
+        <button id="swap-btn" title="Swap texts">⇄</button>
+      </div>
+
+      <div class="input-panel" id="panel-right">
+        <div class="panel-header">
+          <h2>Modified</h2>
+          <label class="file-upload-btn">
+            <input type="file" id="file-right" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.c,.cpp,.h,.log,.yml,.yaml,.toml,.ini,.cfg,.conf,.sh,.bat,.sql,.rb,.go,.rs,.ts,.tsx,.jsx,.vue,.svelte,.php" hidden>
+            Upload File
+          </label>
+        </div>
+        <textarea id="text-right" placeholder="Paste or type modified text here..."></textarea>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls">
+      <button id="compare-btn" class="btn-primary">Compare</button>
+      <button id="clear-btn" class="btn-secondary">Clear All</button>
+      <div class="view-toggle">
+        <button id="view-side" class="toggle-btn active" data-view="side">Side by Side</button>
+        <button id="view-inline" class="toggle-btn" data-view="inline">Inline</button>
+      </div>
+      <div class="diff-stats" id="diff-stats"></div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="results-section" hidden>
+      <div id="diff-output" class="diff-output side-by-side"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>All processing happens locally in your browser. No data is sent to any server.</p>
+  </footer>
+
+  <script src="diff.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
