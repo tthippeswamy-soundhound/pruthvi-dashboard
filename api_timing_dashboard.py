@@ -603,6 +603,13 @@ def refresh_dashboard(store_data):
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))
-    print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
-    app.run(debug=False, host="0.0.0.0", port=port)
+    if "streamlit" in sys.modules:
+        # If this file is started via "streamlit run", render the Streamlit UI
+        # instead of trying to boot the Dash server on port 8050.
+        from streamlit_app import render as render_streamlit
+
+        render_streamlit()
+    else:
+        port = int(os.environ.get("PORT", 8050))
+        print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
+        app.run(debug=False, host="0.0.0.0", port=port)
