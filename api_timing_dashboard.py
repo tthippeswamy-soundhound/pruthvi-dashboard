@@ -838,5 +838,6 @@ def render_drilldown(store_data, selected_conv_id):
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-       # For cloud deployment (e.g., Streamlit Cloud), do NOT run app.run().
-       # The platform will serve the Dash app automatically.
+    # For cloud deployment (e.g., Streamlit Cloud), do NOT run app.run().
+    # The platform will serve the Dash app automatically.
+    pass
