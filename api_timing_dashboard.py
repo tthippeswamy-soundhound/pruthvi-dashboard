@@ -217,6 +217,7 @@ def fig_bar_avg(avg_per_api):
     return fig
 
 
+
 def fig_scatter(df_convs):
     fig = go.Figure()
     for _, row in df_convs.iterrows():
@@ -581,7 +582,7 @@ def refresh_dashboard(store_data):
                   f"{fastest_avg:.0f} ms avg", COLORS["accent2"]),
         stat_card("Avg Total Exec Time", f"{avg_total:.0f} ms",
                   "across all conversations", COLORS["accent4"]),
-        stat_card("Max Exec Time Conv", max_row["conv_id"][-10:],
+        stat_card("Max Exec Time Conv", max_row["conv_id"],
                   f"{max_row['total_ms']:.0f} ms on {max_row['date']}", COLORS["accent3"]),
     ]
 
@@ -604,7 +605,4 @@ def refresh_dashboard(store_data):
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    # port = int(sys.argv[1]) if len(sys.argv) > 1 else 8050
-    port = 8501
-    print(f"\n  API Timing Dashboard  →  http://localhost:{port}\n")
-    app.run(debug=False, host="0.0.0.0", port=port)
+    app.run(debug=True)
