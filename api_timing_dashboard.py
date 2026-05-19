@@ -306,6 +306,34 @@ def fig_stacked(df_apis, df_convs):
     return fig
 
 
+def fig_conversation_breakdown(record):
+    apis_only = {k: v for k, v in record["timing"].items() if k != "totalExecutionTime"}
+    if not apis_only:
+        return empty_fig("No API timing data for selected conversation")
+
+    items = sorted(apis_only.items(), key=lambda x: x[1], reverse=True)
+    apis = [k for k, _ in items]
+    ms_values = [v for _, v in items]
+
+    fig = go.Figure(go.Bar(
+        x=apis,
+        y=ms_values,
+        marker_color=[API_COLORS[i % len(API_COLORS)] for i in range(len(apis))],
+        text=[f"{v:.0f} ms" for v in ms_values],
+        textposition="outside",
+        hovertemplate="<b>%{x}</b><br>Execution: %{y:.0f} ms<extra></extra>",
+    ))
+    fig.update_layout(
+        **LAYOUT_BASE,
+        title=dict(text="API Execution Time for Selected Conversation", font=dict(size=16)),
+        xaxis_title="API",
+        yaxis_title="Execution Time (ms)",
+        xaxis_tickangle=-35,
+        showlegend=False,
+    )
+    return fig
+
+
 # ── UI helpers ────────────────────────────────────────────────────────────────
 
 
@@ -393,120 +421,208 @@ app.layout = html.Div(
                      style={"marginTop": "10px", "fontSize": "13px", "textAlign": "center"}),
         ], style={"marginBottom": "28px"}),
 
-        # ── Summary cards ────────────────────────────────────────────────────
-        html.Div(id="summary-cards",
-                 style={"display": "flex", "gap": "16px", "flexWrap": "wrap",
-                        "marginBottom": "28px"}),
 
-        # ── Row 1: Bar avg + Pie ─────────────────────────────────────────────
-        html.Div([
-            html.Div(dcc.Graph(id="chart-bar-avg", config={"displayModeBar": False}),
-                     style={"flex": "2", "background": COLORS["card"], "borderRadius": "12px",
-                            "padding": "16px", "border": f"1px solid {COLORS['border']}"}),
-            html.Div(dcc.Graph(id="chart-pie", config={"displayModeBar": False}),
-                     style={"flex": "1", "background": COLORS["card"], "borderRadius": "12px",
-                            "padding": "16px", "border": f"1px solid {COLORS['border']}"}),
-        ], style={"display": "flex", "gap": "16px", "marginBottom": "20px"}),
+        dcc.Tabs(
+            value="tab-overview",
+            colors={"border": COLORS["border"], "primary": COLORS["accent1"], "background": COLORS["card"]},
+            children=[
+                dcc.Tab(
+                    label="Overview",
+                    value="tab-overview",
+                    style={"backgroundColor": COLORS["card"], "color": COLORS["subtext"], "padding": "12px", "border": f"1px solid {COLORS['border']}"},
+                    selected_style={"backgroundColor": COLORS["upload"], "color": COLORS["text"], "padding": "12px", "border": f"1px solid {COLORS['accent1']}", "fontWeight": "700"},
+                    children=[
+                        # ── Summary cards ────────────────────────────────────
+                        html.Div(id="summary-cards",
+                                 style={"display": "flex", "gap": "16px", "flexWrap": "wrap",
+                                        "marginBottom": "28px", "marginTop": "16px"}),
 
-        # ── Row 2: Scatter ───────────────────────────────────────────────────
-        html.Div([
-            dcc.Graph(id="chart-scatter", config={"displayModeBar": False}),
-            html.Div([
-                html.Span("Selected Conversation ID:",
-                          style={"color": COLORS["subtext"], "fontSize": "12px",
-                                 "marginRight": "10px"}),
-                html.Code(
-                    id="selected-conv-id",
-                    children="Click a point in the chart",
-                    style={
-                        "background": COLORS["bg"],
-                        "color": COLORS["accent2"],
-                        "border": f"1px solid {COLORS['border']}",
-                        "borderRadius": "6px",
-                        "padding": "6px 10px",
-                        "fontSize": "12px",
-                    },
+                        # ── Row 1: Bar avg + Pie ─────────────────────────────
+                        html.Div([
+                            html.Div(dcc.Graph(id="chart-bar-avg", config={"displayModeBar": False}),
+                                     style={"flex": "2", "background": COLORS["card"], "borderRadius": "12px",
+                                            "padding": "16px", "border": f"1px solid {COLORS['border']}"}),
+                            html.Div(dcc.Graph(id="chart-pie", config={"displayModeBar": False}),
+                                     style={"flex": "1", "background": COLORS["card"], "borderRadius": "12px",
+                                            "padding": "16px", "border": f"1px solid {COLORS['border']}"}),
+                        ], style={"display": "flex", "gap": "16px", "marginBottom": "20px"}),
+
+                        # ── Row 2: Scatter ───────────────────────────────────
+                        html.Div([
+                            dcc.Graph(id="chart-scatter", config={"displayModeBar": False}),
+                            html.Div([
+                                html.Span("Selected Conversation ID:",
+                                          style={"color": COLORS["subtext"], "fontSize": "12px",
+                                                 "marginRight": "10px"}),
+                                html.Code(
+                                    id="selected-conv-id",
+                                    children="Click a point in the chart",
+                                    style={
+                                        "background": COLORS["bg"],
+                                        "color": COLORS["accent2"],
+                                        "border": f"1px solid {COLORS['border']}",
+                                        "borderRadius": "6px",
+                                        "padding": "6px 10px",
+                                        "fontSize": "12px",
+                                    },
+                                ),
+                                dcc.Clipboard(
+                                    id="copy-conv-id",
+                                    target_id="selected-conv-id",
+                                    title="Copy conversation ID",
+                                    style={
+                                        "display": "inline-block",
+                                        "fontSize": "18px",
+                                        "padding": "0 8px",
+                                        "cursor": "pointer",
+                                        "color": COLORS["accent1"],
+                                        "verticalAlign": "middle",
+                                    },
+                                ),
+                            ], style={
+                                "display": "flex",
+                                "alignItems": "center",
+                                "gap": "6px",
+                                "padding": "0 6px 8px 6px",
+                            }),
+                        ], style={"background": COLORS["card"], "borderRadius": "12px",
+                                  "padding": "16px", "border": f"1px solid {COLORS['border']}",
+                                  "marginBottom": "20px"}),
+
+                        # ── Row 3: Stacked bar ───────────────────────────────
+                        html.Div(
+                            dcc.Graph(id="chart-stacked", config={"displayModeBar": False}),
+                            style={"background": COLORS["card"], "borderRadius": "12px",
+                                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
+                                   "marginBottom": "20px"},
+                        ),
+
+                        # ── Row 4: Heatmap ───────────────────────────────────
+                        html.Div(
+                            dcc.Graph(id="chart-heatmap", config={"displayModeBar": False}),
+                            style={"background": COLORS["card"], "borderRadius": "12px",
+                                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
+                                   "marginBottom": "20px"},
+                        ),
+
+                        # ── Row 5: Table ─────────────────────────────────────
+                        html.Div([
+                            html.H3("Detailed Breakdown by Conversation",
+                                    style={"color": "white", "marginTop": "0", "fontSize": "16px"}),
+                            html.P("All API response times in milliseconds · Sortable & filterable",
+                                   style={"color": COLORS["subtext"], "fontSize": "12px", "margin": "0 0 14px 0"}),
+                            dash_table.DataTable(
+                                id="detail-table",
+                                style_table={"overflowX": "auto"},
+                                style_header={
+                                    "backgroundColor": "#252836",
+                                    "color": COLORS["accent1"],
+                                    "fontWeight": "700",
+                                    "fontSize": "12px",
+                                    "border": f"1px solid {COLORS['border']}",
+                                    "textTransform": "uppercase",
+                                    "letterSpacing": "0.5px",
+                                },
+                                style_cell={
+                                    "backgroundColor": COLORS["card"],
+                                    "color": COLORS["text"],
+                                    "border": f"1px solid {COLORS['border']}",
+                                    "fontSize": "12px",
+                                    "padding": "10px 12px",
+                                    "textAlign": "center",
+                                },
+                                style_data_conditional=[
+                                    {"if": {"row_index": "odd"}, "backgroundColor": "#1e2130"},
+                                    {"if": {"column_id": "Slowest API"},
+                                     "color": COLORS["accent3"], "fontWeight": "600"},
+                                    {"if": {"column_id": "Total Exec (ms)"},
+                                     "color": COLORS["accent4"], "fontWeight": "600"},
+                                    {"if": {"column_id": "Conversation ID"},
+                                     "color": COLORS["accent2"], "fontWeight": "600", "textAlign": "left"},
+                                ],
+                                sort_action="native",
+                                filter_action="native",
+                                page_size=20,
+                            ),
+                        ], style={"background": COLORS["card"], "borderRadius": "12px",
+                                  "padding": "20px", "border": f"1px solid {COLORS['border']}"}),
+                    ],
                 ),
-                dcc.Clipboard(
-                    id="copy-conv-id",
-                    target_id="selected-conv-id",
-                    title="Copy conversation ID",
-                    style={
-                        "display": "inline-block",
-                        "fontSize": "18px",
-                        "padding": "0 8px",
-                        "cursor": "pointer",
-                        "color": COLORS["accent1"],
-                        "verticalAlign": "middle",
-                    },
+                dcc.Tab(
+                    label="Conversation Drilldown",
+                    value="tab-drilldown",
+                    style={"backgroundColor": COLORS["card"], "color": COLORS["subtext"], "padding": "12px", "border": f"1px solid {COLORS['border']}"},
+                    selected_style={"backgroundColor": COLORS["upload"], "color": COLORS["text"], "padding": "12px", "border": f"1px solid {COLORS['accent1']}", "fontWeight": "700"},
+                    children=[
+                        html.Div([
+                            html.Label("Find Conversation ID",
+                                       style={"color": COLORS["subtext"], "fontSize": "12px", "display": "block", "marginBottom": "8px"}),
+                            dcc.Input(
+                                id="drill-search",
+                                type="text",
+                                placeholder="Type full or partial Conversation ID...",
+                                debounce=True,
+                                style={
+                                    "width": "100%",
+                                    "background": COLORS["upload"],
+                                    "color": COLORS["text"],
+                                    "border": f"1px solid {COLORS['border']}",
+                                    "borderRadius": "10px",
+                                    "padding": "10px 12px",
+                                    "fontSize": "13px",
+                                    "outline": "none",
+                                },
+                            ),
+                        ], style={"marginTop": "16px", "marginBottom": "12px"}),
+                        dcc.Dropdown(
+                            id="drill-conv-id",
+                            options=[],
+                            placeholder="Select conversation ID",
+                            style={
+                                "backgroundColor": COLORS["card"],
+                                "color": COLORS["bg"],
+                                "marginBottom": "12px",
+                            },
+                        ),
+                        html.Div(id="drill-meta", style={"marginBottom": "12px", "color": COLORS["subtext"], "fontSize": "12px"}),
+                        html.Div(
+                            dcc.Graph(id="chart-single-conv", config={"displayModeBar": False}),
+                            style={"background": COLORS["card"], "borderRadius": "12px",
+                                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
+                                   "marginBottom": "20px"},
+                        ),
+                        html.Div([
+                            html.H3("Selected Conversation API Timing",
+                                    style={"color": "white", "marginTop": "0", "fontSize": "16px"}),
+                            dash_table.DataTable(
+                                id="single-conv-table",
+                                style_table={"overflowX": "auto"},
+                                style_header={
+                                    "backgroundColor": "#252836",
+                                    "color": COLORS["accent1"],
+                                    "fontWeight": "700",
+                                    "fontSize": "12px",
+                                    "border": f"1px solid {COLORS['border']}",
+                                    "textTransform": "uppercase",
+                                    "letterSpacing": "0.5px",
+                                },
+                                style_cell={
+                                    "backgroundColor": COLORS["card"],
+                                    "color": COLORS["text"],
+                                    "border": f"1px solid {COLORS['border']}",
+                                    "fontSize": "12px",
+                                    "padding": "10px 12px",
+                                    "textAlign": "center",
+                                },
+                                sort_action="native",
+                                page_size=25,
+                            ),
+                        ], style={"background": COLORS["card"], "borderRadius": "12px",
+                                  "padding": "20px", "border": f"1px solid {COLORS['border']}"}),
+                    ],
                 ),
-            ], style={
-                "display": "flex",
-                "alignItems": "center",
-                "gap": "6px",
-                "padding": "0 6px 8px 6px",
-            }),
-        ], style={"background": COLORS["card"], "borderRadius": "12px",
-                  "padding": "16px", "border": f"1px solid {COLORS['border']}",
-                  "marginBottom": "20px"}),
-
-        # ── Row 3: Stacked bar ───────────────────────────────────────────────
-        html.Div(
-            dcc.Graph(id="chart-stacked", config={"displayModeBar": False}),
-            style={"background": COLORS["card"], "borderRadius": "12px",
-                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
-                   "marginBottom": "20px"},
+            ],
         ),
-
-        # ── Row 4: Heatmap ───────────────────────────────────────────────────
-        html.Div(
-            dcc.Graph(id="chart-heatmap", config={"displayModeBar": False}),
-            style={"background": COLORS["card"], "borderRadius": "12px",
-                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
-                   "marginBottom": "20px"},
-        ),
-
-        # ── Row 5: Table ─────────────────────────────────────────────────────
-        html.Div([
-            html.H3("Detailed Breakdown by Conversation",
-                    style={"color": "white", "marginTop": "0", "fontSize": "16px"}),
-            html.P("All API response times in milliseconds · Sortable & filterable",
-                   style={"color": COLORS["subtext"], "fontSize": "12px", "margin": "0 0 14px 0"}),
-            dash_table.DataTable(
-                id="detail-table",
-                style_table={"overflowX": "auto"},
-                style_header={
-                    "backgroundColor": "#252836",
-                    "color": COLORS["accent1"],
-                    "fontWeight": "700",
-                    "fontSize": "12px",
-                    "border": f"1px solid {COLORS['border']}",
-                    "textTransform": "uppercase",
-                    "letterSpacing": "0.5px",
-                },
-                style_cell={
-                    "backgroundColor": COLORS["card"],
-                    "color": COLORS["text"],
-                    "border": f"1px solid {COLORS['border']}",
-                    "fontSize": "12px",
-                    "padding": "10px 12px",
-                    "textAlign": "center",
-                },
-                style_data_conditional=[
-                    {"if": {"row_index": "odd"}, "backgroundColor": "#1e2130"},
-                    {"if": {"column_id": "Slowest API"},
-                     "color": COLORS["accent3"], "fontWeight": "600"},
-                    {"if": {"column_id": "Total Exec (ms)"},
-                     "color": COLORS["accent4"], "fontWeight": "600"},
-                    {"if": {"column_id": "Conversation ID"},
-                     "color": COLORS["accent2"], "fontWeight": "600", "textAlign": "left"},
-                ],
-                sort_action="native",
-                filter_action="native",
-                page_size=20,
-            ),
-        ], style={"background": COLORS["card"], "borderRadius": "12px",
-                  "padding": "20px", "border": f"1px solid {COLORS['border']}"}),
 
         # ── Footer ───────────────────────────────────────────────────────────
         html.Div(
@@ -580,8 +696,7 @@ def refresh_dashboard(store_data):
 
     if not records:
         blank = empty_fig("Upload a file to get started")
-        no_cards = [html.P("No data loaded yet.",
-                           style={"color": COLORS["subtext"], "fontSize": "13px"})]
+        no_cards = [html.P("No data loaded yet.", style={"color": COLORS["subtext"], "fontSize": "13px"})]
         return (
             html.Span("No data", style={"color": COLORS["subtext"], "fontSize": "12px"}),
             no_cards,
@@ -652,7 +767,75 @@ def set_selected_conversation_id(click_data):
     return conv_id if conv_id else "N/A"
 
 
+@app.callback(
+    Output("drill-conv-id", "options"),
+    Output("drill-conv-id", "value"),
+    Input("store-records", "data"),
+    Input("drill-search", "value"),
+)
+def update_drilldown_options(store_data, drill_search):
+    records = store_data if store_data else load_default()
+    query = (drill_search or "").strip().lower()
+
+    if query:
+        records = [r for r in records if query in str(r.get("conv_id", "")).lower()]
+
+    options = [{"label": r["conv_id"], "value": r["conv_id"]} for r in records]
+    value = options[0]["value"] if options else None
+    return options, value
+
+
+@app.callback(
+    Output("drill-meta", "children"),
+    Output("chart-single-conv", "figure"),
+    Output("single-conv-table", "data"),
+    Output("single-conv-table", "columns"),
+    Input("store-records", "data"),
+    Input("drill-conv-id", "value"),
+)
+def render_drilldown(store_data, selected_conv_id):
+    records = store_data if store_data else load_default()
+
+    if not records:
+        return (
+            "No data loaded.",
+            empty_fig("Upload a file to get started"),
+            [],
+            [],
+        )
+
+    if not selected_conv_id:
+        return (
+            "Select a conversation ID to view API execution times.",
+            empty_fig("Select a conversation"),
+            [],
+            [{"name": "API", "id": "API"}, {"name": "Execution Time (ms)", "id": "Execution Time (ms)"}],
+        )
+
+    selected = next((r for r in records if r["conv_id"] == selected_conv_id), None)
+    if not selected:
+        return (
+            "Selected conversation was not found.",
+            empty_fig("Conversation not found"),
+            [],
+            [{"name": "API", "id": "API"}, {"name": "Execution Time (ms)", "id": "Execution Time (ms)"}],
+        )
+
+    apis_only = {k: v for k, v in selected["timing"].items() if k != "totalExecutionTime"}
+    table_rows = [{"API": api, "Execution Time (ms)": ms} for api, ms in sorted(apis_only.items(), key=lambda x: x[1], reverse=True)]
+    columns = [{"name": "API", "id": "API"}, {"name": "Execution Time (ms)", "id": "Execution Time (ms)"}]
+    total_ms = selected["timing"].get("totalExecutionTime", sum(apis_only.values()))
+
+    meta = html.Div([
+        html.Span("Conversation: ", style={"color": COLORS["subtext"]}),
+        html.Code(selected_conv_id, style={"color": COLORS["accent2"], "background": COLORS["bg"], "padding": "2px 6px", "borderRadius": "4px"}),
+        html.Span(f"  |  Date: {selected.get('date', '')} {selected.get('time', '')}  |  Total: {total_ms:.0f} ms", style={"marginLeft": "8px"}),
+    ])
+
+    return meta, fig_conversation_breakdown(selected), table_rows, columns
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, port=8147)
