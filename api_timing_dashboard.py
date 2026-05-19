@@ -231,6 +231,7 @@ def fig_scatter(df_convs):
             text=[row["conv_id"][-6:]],
             textposition="top center",
             textfont=dict(size=9),
+            customdata=[row["conv_id"]],
             name=row["conv_id"],
             hovertemplate=(
                 f"<b>{row['conv_id']}</b><br>"
@@ -408,12 +409,46 @@ app.layout = html.Div(
         ], style={"display": "flex", "gap": "16px", "marginBottom": "20px"}),
 
         # ── Row 2: Scatter ───────────────────────────────────────────────────
-        html.Div(
+        html.Div([
             dcc.Graph(id="chart-scatter", config={"displayModeBar": False}),
-            style={"background": COLORS["card"], "borderRadius": "12px",
-                   "padding": "16px", "border": f"1px solid {COLORS['border']}",
-                   "marginBottom": "20px"},
-        ),
+            html.Div([
+                html.Span("Selected Conversation ID:",
+                          style={"color": COLORS["subtext"], "fontSize": "12px",
+                                 "marginRight": "10px"}),
+                html.Code(
+                    id="selected-conv-id",
+                    children="Click a point in the chart",
+                    style={
+                        "background": COLORS["bg"],
+                        "color": COLORS["accent2"],
+                        "border": f"1px solid {COLORS['border']}",
+                        "borderRadius": "6px",
+                        "padding": "6px 10px",
+                        "fontSize": "12px",
+                    },
+                ),
+                dcc.Clipboard(
+                    id="copy-conv-id",
+                    target_id="selected-conv-id",
+                    title="Copy conversation ID",
+                    style={
+                        "display": "inline-block",
+                        "fontSize": "18px",
+                        "padding": "0 8px",
+                        "cursor": "pointer",
+                        "color": COLORS["accent1"],
+                        "verticalAlign": "middle",
+                    },
+                ),
+            ], style={
+                "display": "flex",
+                "alignItems": "center",
+                "gap": "6px",
+                "padding": "0 6px 8px 6px",
+            }),
+        ], style={"background": COLORS["card"], "borderRadius": "12px",
+                  "padding": "16px", "border": f"1px solid {COLORS['border']}",
+                  "marginBottom": "20px"}),
 
         # ── Row 3: Stacked bar ───────────────────────────────────────────────
         html.Div(
@@ -602,7 +637,22 @@ def refresh_dashboard(store_data):
     )
 
 
+@app.callback(
+    Output("selected-conv-id", "children"),
+    Input("chart-scatter", "clickData"),
+)
+def set_selected_conversation_id(click_data):
+    if not click_data or "points" not in click_data or not click_data["points"]:
+        return "Click a point in the chart"
+
+    conv_id = click_data["points"][0].get("customdata")
+    if isinstance(conv_id, list):
+        conv_id = conv_id[0] if conv_id else ""
+
+    return conv_id if conv_id else "N/A"
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
